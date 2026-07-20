@@ -1,4 +1,3 @@
-// Auto-generated snapshot — loaded via <script> so the tracker works on file://
 window.SEED_DATA = [
   {
     "id": 1,
@@ -322,7 +321,7 @@ window.SEED_DATA = [
     "level": "Admin / Entry Level",
     "salary": "Not listed",
     "status": "Applied",
-    "notes": "Full Apply"
+    "notes": "Applied manually"
   },
   {
     "id": 28,
@@ -981,8 +980,8 @@ window.SEED_DATA = [
     "platform": "Reed",
     "level": "Admin/Entry Level",
     "salary": "£25,000-£28,000",
-    "status": "Found – Apply Manually",
-    "notes": "Browser blocked – apply via Reed.co.uk"
+    "status": "Applied",
+    "notes": "Applied manually"
   },
   {
     "id": 83,
@@ -993,8 +992,8 @@ window.SEED_DATA = [
     "platform": "Reed",
     "level": "Admin/Entry Level",
     "salary": "£25,000-£30,000",
-    "status": "Found – Apply Manually",
-    "notes": "Browser blocked – apply via Reed.co.uk"
+    "status": "Applied",
+    "notes": "Applied manually"
   },
   {
     "id": 84,
@@ -1005,8 +1004,8 @@ window.SEED_DATA = [
     "platform": "Reed",
     "level": "Admin/Entry Level",
     "salary": "Competitive",
-    "status": "Found – Apply Manually",
-    "notes": "Browser blocked – apply via Reed.co.uk"
+    "status": "Applied",
+    "notes": "Applied manually"
   },
   {
     "id": 85,
@@ -1017,8 +1016,8 @@ window.SEED_DATA = [
     "platform": "Reed",
     "level": "Admin/Entry Level",
     "salary": "Competitive",
-    "status": "Found – Apply Manually",
-    "notes": "Browser blocked – apply via Reed.co.uk"
+    "status": "Applied",
+    "notes": "Applied manually"
   },
   {
     "id": 86,
@@ -1029,8 +1028,8 @@ window.SEED_DATA = [
     "platform": "Reed",
     "level": "Cleaner/Flexible",
     "salary": "£14.80/hr",
-    "status": "Found – Apply Manually",
-    "notes": "Browser blocked – apply via Reed.co.uk"
+    "status": "Applied",
+    "notes": "Applied manually"
   },
   {
     "id": 87,
@@ -1041,8 +1040,8 @@ window.SEED_DATA = [
     "platform": "Reed",
     "level": "Cleaner/Flexible",
     "salary": "£14.80/hr",
-    "status": "Found – Apply Manually",
-    "notes": "Browser blocked – apply via Reed.co.uk"
+    "status": "Applied",
+    "notes": "Applied manually"
   },
   {
     "id": 88,
@@ -1053,8 +1052,8 @@ window.SEED_DATA = [
     "platform": "Reed",
     "level": "IT/Support",
     "salary": "£31,000",
-    "status": "Found – Apply Manually",
-    "notes": "Browser blocked – apply via Reed.co.uk"
+    "status": "Applied",
+    "notes": "Applied manually"
   },
   {
     "id": 89,
@@ -1065,8 +1064,8 @@ window.SEED_DATA = [
     "platform": "Reed",
     "level": "Admin/Entry Level",
     "salary": "Competitive",
-    "status": "Found – Apply Manually",
-    "notes": "Browser blocked – apply via Reed.co.uk"
+    "status": "Applied",
+    "notes": "Applied manually"
   },
   {
     "id": 90,
@@ -1077,8 +1076,8 @@ window.SEED_DATA = [
     "platform": "Reed",
     "level": "Admin/Entry Level",
     "salary": "£24,800",
-    "status": "Found – Apply Manually",
-    "notes": "Browser blocked – apply via Reed.co.uk"
+    "status": "Applied",
+    "notes": "Applied manually"
   },
   {
     "id": 91,
@@ -1089,8 +1088,8 @@ window.SEED_DATA = [
     "platform": "Reed",
     "level": "Admin/Entry Level",
     "salary": "£24,800",
-    "status": "Found – Apply Manually",
-    "notes": "Browser blocked – apply via Reed.co.uk"
+    "status": "Applied",
+    "notes": "Applied manually"
   },
   {
     "id": 92,
@@ -1101,8 +1100,8 @@ window.SEED_DATA = [
     "platform": "Reed",
     "level": "Admin/Entry Level",
     "salary": "£30,000-£35,000",
-    "status": "Found – Apply Manually",
-    "notes": "Browser blocked – apply via Reed.co.uk"
+    "status": "Applied",
+    "notes": "Applied manually"
   },
   {
     "id": 93,
@@ -1113,8 +1112,8 @@ window.SEED_DATA = [
     "platform": "Reed",
     "level": "Admin/Entry Level",
     "salary": "£26,000-£27,000",
-    "status": "Found – Apply Manually",
-    "notes": "Browser blocked – apply via Reed.co.uk"
+    "status": "Applied",
+    "notes": "Applied manually"
   },
   {
     "id": 94,
@@ -1125,8 +1124,8 @@ window.SEED_DATA = [
     "platform": "Reed",
     "level": "Cleaner/Flexible",
     "salary": "£14.80/hr",
-    "status": "Found – Apply Manually",
-    "notes": "Browser blocked – apply via Reed.co.uk"
+    "status": "Applied",
+    "notes": "Applied manually"
   },
   {
     "id": 95,
@@ -1137,8 +1136,8 @@ window.SEED_DATA = [
     "platform": "Reed",
     "level": "Cleaner/Flexible",
     "salary": "£14.80/hr",
-    "status": "Found – Apply Manually",
-    "notes": "Browser blocked – apply via Reed.co.uk"
+    "status": "Applied",
+    "notes": "Applied manually"
   },
   {
     "id": 96,
@@ -1149,8 +1148,8 @@ window.SEED_DATA = [
     "platform": "Reed",
     "level": "Admin/Entry Level",
     "salary": "£25,000-£31,000",
-    "status": "Found – Apply Manually",
-    "notes": "Browser blocked – apply via Reed.co.uk"
+    "status": "Applied",
+    "notes": "Applied manually"
   },
   {
     "id": 97,
@@ -1161,8 +1160,8 @@ window.SEED_DATA = [
     "platform": "Reed",
     "level": "Admin/Entry Level",
     "salary": "£33,000-£35,000",
-    "status": "Found – Apply Manually",
-    "notes": "Browser blocked – apply via Reed.co.uk"
+    "status": "Applied",
+    "notes": "Applied manually"
   },
   {
     "id": 98,
@@ -1173,8 +1172,8 @@ window.SEED_DATA = [
     "platform": "Reed",
     "level": "Admin/Entry Level",
     "salary": "£30,000-£40,000",
-    "status": "Found – Apply Manually",
-    "notes": "Browser blocked – apply via Reed.co.uk"
+    "status": "Applied",
+    "notes": "Applied manually"
   },
   {
     "id": 99,
@@ -1185,8 +1184,8 @@ window.SEED_DATA = [
     "platform": "Reed",
     "level": "Admin/Entry Level",
     "salary": "£27,000-£30,000",
-    "status": "Found – Apply Manually",
-    "notes": "Browser blocked – apply via Reed.co.uk"
+    "status": "Applied",
+    "notes": "Applied manually"
   },
   {
     "id": 100,
@@ -1197,8 +1196,8 @@ window.SEED_DATA = [
     "platform": "IT Jobs",
     "level": "IT/Support",
     "salary": "£32,000-£35,000",
-    "status": "Found – Apply Manually",
-    "notes": "Browser blocked – apply via it-jobs.co.uk"
+    "status": "Applied",
+    "notes": "Applied manually"
   },
   {
     "id": 101,
@@ -1209,8 +1208,8 @@ window.SEED_DATA = [
     "platform": "IT Jobs",
     "level": "IT/Entry Level",
     "salary": "£25,948",
-    "status": "Found – Apply Manually",
-    "notes": "Browser blocked – apply via it-jobs.co.uk"
+    "status": "Applied",
+    "notes": "Applied manually"
   },
   {
     "id": 102,
@@ -1221,8 +1220,8 @@ window.SEED_DATA = [
     "platform": "Reed",
     "level": "Admin/Entry Level",
     "salary": "£25,000-£31,000",
-    "status": "Found – Apply Manually",
-    "notes": "Browser blocked – apply via Reed.co.uk"
+    "status": "Applied",
+    "notes": "Applied manually"
   },
   {
     "id": 103,
@@ -1233,8 +1232,8 @@ window.SEED_DATA = [
     "platform": "IT Jobs",
     "level": "IT/Entry Level",
     "salary": "£30,000-£38,000",
-    "status": "Found – Apply Manually",
-    "notes": "Browser blocked – apply via it-jobs.co.uk"
+    "status": "Applied",
+    "notes": "Applied manually"
   },
   {
     "id": 104,
@@ -1245,7 +1244,7 @@ window.SEED_DATA = [
     "platform": "IT Jobs",
     "level": "Admin/Entry Level",
     "salary": "£28,000-£30,000",
-    "status": "Found – Apply Manually",
+    "status": "Applied",
     "notes": "Easy Apply via it-jobs.co.uk"
   },
   {
@@ -1257,7 +1256,7 @@ window.SEED_DATA = [
     "platform": "IT Jobs",
     "level": "IT/Support",
     "salary": "£50,000-£60,000",
-    "status": "Found – Apply Manually",
+    "status": "Applied",
     "notes": "Easy Apply via it-jobs.co.uk"
   },
   {
