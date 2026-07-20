@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Job Applications Tracker – Pheeraphat</title>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        referrerpolicy="no-referrer" />
+
+  <!-- Local snapshot of data.json. A <script src> tag loads fine on
+       file:// (unlike fetch, which browsers block for local files),
+       so this guarantees the tracker has data even when opened by
+       double-clicking. When served over http:// the loader below
+       prefers the live data.json instead. Keep data.js in sync with
+       data.json (regenerate it after editing data.json). -->
+  <script src="data.js"></script>
+
+  <style>
+    :root {
+      --bg:        #0b0f17;
+      --surface:   #131a26;
+      --surface-2: #1a2332;
+      --surface-3: #222d40;
+      --border:    #243044;
+      --border-2:  #2e3c54;
+      --text:      #e6edf6;
+      --muted:     #8a98ac;
+      --muted-2:   #64748b;
+      --accent:    #38bdf8;
+      --accent-2:  #0ea5e9;
+      --green:     #4ade80;
+      --amber:     #facc15;
+      --violet:    #a78bfa;
+      --blue:      #60a5fa;
+      --red:       #f87171;
+      --radius:    12px;
+      --radius-sm: 8px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      font-size: 14px;
+    }
+
+    ::selection { background: rgba(56,189,248,.3); }
+
+    /* Scrollbar */
+    *::-webkit-scrollbar { height: 10px; width: 10px; }
+    *::-webkit-scrollbar-track { background: var(--bg); }
+    *::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 6px; }
+    *::-webkit-scrollbar-thumb:hover { background: #3b4b69; }
+
+    /* ── Header ─────────────────────────────────────────────── */
+    header {
+      background: linear-gradient(135deg, #16233a 0%, #0b1320 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 22px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand .logo {
+      width: 44px; height: 44px;
+      display: grid; place-items: center;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      border-radius: 12px;
+      color: #06283d;
+      font-size: 1.25rem;
+      box-shadow: 0 6px 20px rgba(56,189,248,.25);
+    }
+    header h1 {
+      font-size: 1.35rem; font-weight: 700; color: #f1f5f9;
+      letter-spacing: -0.01em;
+      display: flex; align-items: center; gap: 8px;
+    }
+    header p { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+
+    .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .source-chip {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 0.72rem; color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 6px 11px; border-radius: 20px;
+    }
+    .source-chip i { color: var(--accent); }
+    .source-chip.warn i { color: var(--amber); }
+
+    /* ── Buttons ────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      cursor: pointer;
+      font-size: 0.82rem; font-weight: 600;
+      font-family: inherit;
+      transition: all .15s ease;
+      white-space: nowrap;
+    }
+    .btn-primary { background: var(--accent-2); color: #fff; }
+    .btn-primary:hover { background: #0284c7; }
+    .btn-ghost { background: var(--surface-2); color: var(--text); border-color: var(--border); }
+    .btn-ghost:hover { background: var(--surface-3); border-color: var(--border-2); }
+    .btn-danger { background: #b91c1c; color: #fff; }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-icon {
+      width: 36px; height: 36px; padding: 0;
+      justify-content: center;
+      background: var(--surface-2); color: var(--muted);
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+    }
+    .btn-icon:hover { color: var(--text); background: var(--surface-3); }
+
+    /* ── Stats ──────────────────────────────────────────────── */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      padding: 22px 32px;
+    }
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      display: flex; align-items: center; gap: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+      width: 3px; background: var(--accent);
+    }
+    .stat .ico {
+      width: 40px; height: 40px; flex: none;
+      display: grid; place-items: center;
+      border-radius: 10px;
+      background: var(--surface-2);
+      color: var(--accent);
+      font-size: 1.05rem;
+    }
+    .stat .num { font-size: 1.6rem; font-weight: 800; line-height: 1; }
+    .stat .lbl { font-size: 0.7rem; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: .05em; }
+
+    .stat.s-total   .ico { color: var(--accent); }
+    .stat.s-week    .ico { color: var(--violet); }
+    .stat.s-month   .ico { color: var(--blue); }
+    .stat.s-interview .ico { color: var(--green); }
+    .stat.s-offer   .ico { color: var(--amber); }
+    .stat.s-week::before    { background: var(--violet); }
+    .stat.s-month::before   { background: var(--blue); }
+    .stat.s-interview::before { background: var(--green); }
+    .stat.s-offer::before   { background: var(--amber); }
+    .stat.s-interview .num { color: var(--green); }
+    .stat.s-offer .num     { color: var(--amber); }
+
+    /* ── Controls ───────────────────────────────────────────── */
+    .controls {
+      display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end;
+      padding: 4px 32px 18px;
+    }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label {
+      font-size: 0.68rem; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .05em;
+      padding-left: 2px;
+    }
+    .search-wrap { position: relative; flex: 1; min-width: 220px; max-width: 320px; }
+    .search-wrap i.fa-magnifying-glass {
+      position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+      color: var(--muted-2); font-size: 0.85rem; pointer-events: none;
+    }
+    .input, .select {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      padding: 9px 12px;
+      font-size: 0.83rem;
+      outline: none;
+      font-family: inherit;
+      transition: border-color .15s, box-shadow .15s;
+      width: 100%;
+    }
+    .search-wrap .input { padding-left: 34px; }
+    .input:focus, .select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(56,189,248,.15);
+    }
+    .select { cursor: pointer; min-width: 130px; }
+    .select option { background: var(--surface); }
+
+    .spacer { flex: 1; }
+
+    .count-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 8px 14px;
+      font-size: 0.78rem; color: var(--muted);
+    }
+    .count-badge b { color: var(--accent); font-weight: 700; }
+
+    /* ── Table card ─────────────────────────────────────────── */
+    .table-wrap {
+      padding: 0 32px 32px;
+    }
+    .table-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .table-scroll { overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.83rem;
+    }
+    thead th {
+      background: var(--surface-2);
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.68rem;
+      letter-spacing: .06em;
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+      position: sticky; top: 0;
+      transition: color .15s;
+    }
+    thead th:hover { color: var(--text); }
+    thead th .th-icon { margin-left: 6px; opacity: .45; font-size: .7rem; }
+    thead th.active .th-icon { opacity: 1; color: var(--accent); }
+    thead th.no-sort { cursor: default; }
+    thead th.no-sort:hover { color: var(--muted); }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(36,48,68,.6);
+      transition: background .12s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--surface-2); }
+    td { padding: 12px 16px; vertical-align: middle; }
+
+    td.id       { color: var(--muted-2); font-size: 0.75rem; width: 44px; }
+    td.date     { white-space: nowrap; color: var(--muted); }
+    td.title    { font-weight: 600; color: #f1f5f9; max-width: 280px; }
+    td.company  { color: #cbd5e1; }
+    td.location { color: var(--muted); font-size: 0.8rem; }
+    td.salary   { white-space: nowrap; color: var(--green); font-size: 0.8rem; font-weight: 600; }
+    td.notes    { color: var(--muted-2); font-size: 0.78rem; }
+
+    /* ── Status badges ── */
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 11px;
+      border-radius: 20px;
+      font-size: 0.71rem; font-weight: 600;
+      white-space: nowrap;
+    }
+    .badge .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .badge-applied   { background: rgba(37,99,235,.15);  color: #93c5fd; }
+    .badge-interview { background: rgba(5,150,105,.18);  color: #6ee7b7; }
+    .badge-offered   { background: rgba(202,138,4,.18);  color: #fde68a; }
+    .badge-rejected  { background: rgba(185,28,28,.18);  color: #fca5a5; }
+    .badge-withdrawn { background: rgba(100,116,139,.2); color: #cbd5e1; }
+    .badge-default   { background: var(--surface-2);      color: var(--muted); }
+
+    /* ── Pills ── */
+    .pill {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 5px;
+      font-size: 0.7rem;
+      white-space: nowrap;
+    }
+    .pill-level    { background: var(--surface-3); border: 1px solid var(--border); color: var(--muted); }
+    .pill-platform { background: rgba(30,58,138,.25); border: 1px solid rgba(59,130,246,.4); color: #93c5fd; }
+
+    /* ── Row actions ── */
+    .actions { display: flex; gap: 4px; }
+    .icon-btn {
+      background: transparent; border: 1px solid transparent; cursor: pointer;
+      color: var(--muted-2); width: 30px; height: 30px;
+      display: grid; place-items: center;
+      border-radius: 6px; transition: all .15s;
+      font-size: 0.82rem;
+    }
+    .icon-btn:hover { color: var(--text); background: var(--surface-3); border-color: var(--border); }
+    .icon-btn.del:hover { color: var(--red); }
+
+    /* ── Empty state ── */
+    .empty { text-align: center; padding: 70px 20px; color: var(--muted-2); }
+    .empty i { font-size: 2.4rem; margin-bottom: 14px; opacity: .4; }
+    .empty p { font-size: 0.9rem; }
+    .empty .hint { font-size: 0.78rem; color: var(--muted-2); margin-top: 10px; max-width: 420px; margin-inline: auto; line-height: 1.5; }
+
+    /* ── FAB ── */
+    .fab {
+      position: fixed; bottom: 28px; right: 28px;
+      width: 54px; height: 54px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #06283d; border: none; border-radius: 50%;
+      font-size: 1.2rem; cursor: pointer;
+      box-shadow: 0 8px 24px rgba(14,165,233,.45);
+      transition: transform .15s, box-shadow .15s;
+      z-index: 50;
+      display: grid; place-items: center;
+    }
+    .fab:hover { transform: translateY(-2px) scale(1.05); box-shadow: 0 12px 30px rgba(14,165,233,.55); }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(4,8,15,.72);
+      backdrop-filter: blur(3px);
+      z-index: 100;
+      align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 26px;
+      width: 580px; max-width: 100%;
+      max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 30px 60px rgba(0,0,0,.5);
+    }
+    .modal-head { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
+    .modal-head i { color: var(--accent); }
+    .modal-head h2 { font-size: 1.1rem; color: #f1f5f9; font-weight: 700; }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-group label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+    .form-group textarea { resize: vertical; min-height: 64px; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+      header, .stats, .controls, .table-wrap { padding-left: 16px; padding-right: 16px; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .search-wrap { max-width: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo"><i class="fa-solid fa-briefcase"></i></div>
+    <div>
+      <h1>Job Applications Tracker</h1>
+      <p>Pheeraphat Bunliang &mdash; Gillingham, Kent</p>
+    </div>
+  </div>
+  <div class="header-actions">
+    <span class="source-chip" id="source-chip">
+      <i class="fa-solid fa-database"></i>
+      <span id="source-text">Loading data.json&hellip;</span>
+    </span>
+    <button class="btn btn-icon" title="Reload data.json" onclick="reloadFromServer()">
+      <i class="fa-solid fa-rotate-right"></i>
+    </button>
+    <button class="btn btn-primary" onclick="openModal()">
+      <i class="fa-solid fa-plus"></i> Add
+    </button>
+  </div>
+</header>
+
+<div class="stats">
+  <div class="stat s-total">
+    <div class="ico"><i class="fa-solid fa-briefcase"></i></div>
+    <div><div class="num" id="stat-total">0</div><div class="lbl">Total Applied</div></div>
+  </div>
+  <div class="stat s-week">
+    <div class="ico"><i class="fa-solid fa-calendar-week"></i></div>
+    <div><div class="num" id="stat-this-week">0</div><div class="lbl">This Week</div></div>
+  </div>
+  <div class="stat s-month">
+    <div class="ico"><i class="fa-solid fa-calendar-days"></i></div>
+    <div><div class="num" id="stat-this-month">0</div><div class="lbl">This Month</div></div>
+  </div>
+  <div class="stat s-interview">
+    <div class="ico"><i class="fa-solid fa-user-tie"></i></div>
+    <div><div class="num" id="stat-interviews">0</div><div class="lbl">Interviews</div></div>
+  </div>
+  <div class="stat s-offer">
+    <div class="ico"><i class="fa-solid fa-trophy"></i></div>
+    <div><div class="num" id="stat-offers">0</div><div class="lbl">Offers</div></div>
+  </div>
+</div>
+
+<div class="controls">
+  <div class="field search-wrap">
+    <label>Search</label>
+    <div style="position:relative; width:100%;">
+      <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--muted-2); font-size:.85rem; pointer-events:none;"></i>
+      <input id="search" type="text" class="input" placeholder="Title, company, location…" style="padding-left:34px;" oninput="render()" />
+    </div>
+  </div>
+  <div class="field">
+    <label>Status</label>
+    <select id="filter-status" class="select" onchange="render()">
+      <option value="">All</option>
+      <option>Applied</option>
+      <option>Interview</option>
+      <option>Offered</option>
+      <option>Rejected</option>
+      <option>Withdrawn</option>
+    </select>
+  </div>
+  <div class="field">
+    <label>Platform</label>
+    <select id="filter-platform" class="select" onchange="render()">
+      <option value="">All</option>
+    </select>
+  </div>
+  <div class="field">
+    <label>Category</label>
+    <select id="filter-level" class="select" onchange="render()">
+      <option value="">All</option>
+    </select>
+  </div>
+  <div class="spacer"></div>
+  <div class="field">
+    <label>&nbsp;</label>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <span class="count-badge">
+        <i class="fa-solid fa-list"></i> Showing <b id="showing-count">0</b> of <b id="total-count">0</b>
+      </span>
+      <button class="btn btn-ghost" onclick="exportCSV()">
+        <i class="fa-solid fa-file-csv"></i> CSV
+      </button>
+      <button class="btn btn-ghost" onclick="exportJSON()">
+        <i class="fa-solid fa-file-code"></i> JSON
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="table-wrap">
+  <div class="table-card">
+    <div class="table-scroll">
+      <table id="tbl">
+        <thead>
+          <tr>
+            <th data-col="id">#</th>
+            <th class="active" data-col="date">Date <i class="fa-solid fa-sort-down th-icon"></i></th>
+            <th data-col="title">Job Title <i class="fa-solid fa-sort th-icon"></i></th>
+            <th data-col="company">Company <i class="fa-solid fa-sort th-icon"></i></th>
+            <th data-col="location">Location <i class="fa-solid fa-sort th-icon"></i></th>
+            <th data-col="platform">Platform <i class="fa-solid fa-sort th-icon"></i></th>
+            <th data-col="level">Level <i class="fa-solid fa-sort th-icon"></i></th>
+            <th data-col="salary">Salary <i class="fa-solid fa-sort th-icon"></i></th>
+            <th data-col="status">Status <i class="fa-solid fa-sort th-icon"></i></th>
+            <th data-col="notes">Notes <i class="fa-solid fa-sort th-icon"></i></th>
+            <th class="no-sort">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <div class="empty" id="empty" style="display:none">
+      <i class="fa-regular fa-folder-open"></i>
+      <p id="empty-text">No applications match your filters.</p>
+    </div>
+  </div>
+</div>
+
+<!-- FAB -->
+<button class="fab" title="Add application" onclick="openModal()">
+  <i class="fa-solid fa-plus"></i>
+</button>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <i class="fa-solid fa-pen-to-square"></i>
+      <h2 id="modal-title">Add Application</h2>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Date Applied</label>
+        <input type="date" id="f-date" class="input" />
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select id="f-status" class="select">
+          <option>Applied</option>
+          <option>Interview</option>
+          <option>Offered</option>
+          <option>Rejected</option>
+          <option>Withdrawn</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label>Job Title</label>
+        <input type="text" id="f-title" class="input" placeholder="e.g. IT Support Engineer" />
+      </div>
+      <div class="form-group">
+        <label>Company</label>
+        <input type="text" id="f-company" class="input" />
+      </div>
+      <div class="form-group">
+        <label>Location</label>
+        <input type="text" id="f-location" class="input" />
+      </div>
+      <div class="form-group">
+        <label>Platform</label>
+        <input type="text" id="f-platform" class="input" placeholder="Reed, TotalJobs…" />
+      </div>
+      <div class="form-group">
+        <label>Job Level / Category</label>
+        <input type="text" id="f-level" class="input" placeholder="Admin/Entry Level…" />
+      </div>
+      <div class="form-group full">
+        <label>Salary</label>
+        <input type="text" id="f-salary" class="input" placeholder="£25,000 or 14/hr" />
+      </div>
+      <div class="form-group full">
+        <label>Notes</label>
+        <textarea id="f-notes" class="input" placeholder="Easy Apply, referral, etc."></textarea>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-danger" id="btn-delete" onclick="deleteEntry()" style="display:none">
+        <i class="fa-solid fa-trash"></i> Delete
+      </button>
+      <button class="btn btn-primary" onclick="saveEntry()">
+        <i class="fa-solid fa-floppy-disk"></i> Save
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── State ──────────────────────────────────────────────────
+  let data = [];
+  let editingId = null;
+  let sortCol = 'date';
+  let sortDir = 'desc';
+
+  const STORAGE_KEY = 'job_tracker_data_v2';
+
+  // ── Data loading ───────────────────────────────────────────
+  // data.json is the authoritative source when served over http://.
+  // When you open tracker.html directly (file://), the browser
+  // blocks fetch() — so we fall back to window.SEED_DATA, which is
+  // loaded synchronously from the data.js snapshot via a <script>
+  // tag (script tags are NOT blocked on file://).
+  async function loadData() {
+    const chip = document.getElementById('source-chip');
+    const text = document.getElementById('source-text');
+    const finish = (rows, source, warn = false) => {
+      data = Array.isArray(rows) ? rows : [];
+      chip.classList.toggle('warn', warn);
+      text.textContent = source + ' · ' + data.length + ' entries';
+      buildFilters();
+      updateStats();
+      render();
+    };
+
+    // Try the live data.json first (works on http(s):// only).
+    try {
+      const res = await fetch('data.json', { cache: 'no-store' });
+      if (res.ok) {
+        const json = await res.json();
+        finish(json, 'data.json');
+        return;
+      }
+    } catch (e) { /* file:// → fetch blocked; fall through */ }
+
+    // Local snapshot from data.js (loaded via <script src>). Works on file://.
+    if (typeof window.SEED_DATA !== 'undefined' && window.SEED_DATA.length) {
+      finish(window.SEED_DATA, 'data.js snapshot', true);
+      return;
+    }
+
+    // Last resort: any cached edits in localStorage.
+    const cached = localStorage.getItem(STORAGE_KEY);
+    if (cached) {
+      try { finish(JSON.parse(cached), 'local cache', true); return; } catch (e) {}
+    }
+
+    // Nothing available.
+    finish([], 'no data loaded', true);
+    showEmpty('Could not load data.',
+      'Serving over http is the most reliable option: run ' +
+      '<b>python -m http.server</b> in this folder, then open ' +
+      '<b>http://localhost:8000/tracker.html</b>.');
+  }
+
+  function reloadFromServer() {
+    // Force a fresh read of data.json, ignoring the cache.
+    localStorage.removeItem(STORAGE_KEY);
+    document.getElementById('source-text').textContent = 'Loading data.json…';
+    loadData();
+  }
+
+  // ── Helpers ────────────────────────────────────────────────
+  function parseDate(s) {
+    if (!s) return new Date(0);
+    const [d, m, y] = String(s).split('/');
+    if (!y) return new Date(0);
+    return new Date(+y, +m - 1, +d);
+  }
+
+  function fmtDate(s) {
+    const dt = parseDate(s);
+    if (isNaN(dt) || dt.getTime() === 0) return s || '—';
+    return dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
+  function statusBadge(s) {
+    const map = {
+      'applied':   'badge-applied',
+      'interview': 'badge-interview',
+      'offered':   'badge-offered',
+      'rejected':  'badge-rejected',
+      'withdrawn': 'badge-withdrawn',
+    };
+    const cls = map[(s || '').toLowerCase()] || 'badge-default';
+    return `<span class="badge ${cls}"><span class="dot"></span>${escHtml(s) || '—'}</span>`;
+  }
+
+  function escHtml(str) {
+    return String(str == null ? '' : str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  // ── Build dynamic filter dropdowns (clears first, no dupes) ─
+  function buildFilters() {
+    const pSel = document.getElementById('filter-platform');
+    const lSel = document.getElementById('filter-level');
+    const keepP = pSel.value, keepL = lSel.value;
+    pSel.innerHTML = '<option value="">All</option>';
+    lSel.innerHTML = '<option value="">All</option>';
+    const platforms = [...new Set(data.map(r => r.platform).filter(Boolean))].sort();
+    const levels    = [...new Set(data.map(r => r.level).filter(Boolean))].sort();
+    platforms.forEach(p => pSel.add(new Option(p, p)));
+    levels.forEach(l => lSel.add(new Option(l, l)));
+    if (keepP) pSel.value = keepP;
+    if (keepL) lSel.value = keepL;
+  }
+
+  // ── Stats ──────────────────────────────────────────────────
+  function updateStats() {
+    const now     = new Date();
+    const wkAgo   = new Date(now - 7 * 864e5);
+    const moStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    document.getElementById('stat-total').textContent       = data.length;
+    document.getElementById('stat-this-week').textContent   = data.filter(r => parseDate(r.date) >= wkAgo).length;
+    document.getElementById('stat-this-month').textContent  = data.filter(r => parseDate(r.date) >= moStart).length;
+    document.getElementById('stat-interviews').textContent  = data.filter(r => (r.status || '').toLowerCase() === 'interview').length;
+    document.getElementById('stat-offers').textContent      = data.filter(r => (r.status || '').toLowerCase() === 'offered').length;
+    document.getElementById('total-count').textContent      = data.length;
+  }
+
+  // ── Sort ───────────────────────────────────────────────────
+  function setSortIcons() {
+    document.querySelectorAll('thead th[data-col]').forEach(th => {
+      const ic = th.querySelector('.th-icon');
+      if (!ic) return;
+      th.classList.toggle('active', th.dataset.col === sortCol);
+      if (th.dataset.col === sortCol) {
+        ic.className = 'fa-solid th-icon ' + (sortDir === 'asc' ? 'fa-sort-up' : 'fa-sort-down');
+      } else {
+        ic.className = 'fa-solid fa-sort th-icon';
+      }
+    });
+  }
+  document.querySelectorAll('thead th[data-col]').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = th.dataset.col;
+      if (sortCol === col) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+      else { sortCol = col; sortDir = 'asc'; }
+      setSortIcons();
+      render();
+    });
+  });
+
+  // ── Render ─────────────────────────────────────────────────
+  function render() {
+    const q  = document.getElementById('search').value.toLowerCase();
+    const st = document.getElementById('filter-status').value.toLowerCase();
+    const pl = document.getElementById('filter-platform').value;
+    const lv = document.getElementById('filter-level').value;
+
+    let rows = data.filter(r => {
+      const matchQ  = !q || [r.title, r.company, r.location, r.notes, r.platform, r.level].join(' ').toLowerCase().includes(q);
+      const matchSt = !st || (r.status || '').toLowerCase() === st;
+      const matchPl = !pl || r.platform === pl;
+      const matchLv = !lv || r.level === lv;
+      return matchQ && matchSt && matchPl && matchLv;
+    });
+
+    rows = rows.sort((a, b) => {
+      let va = a[sortCol] ?? '', vb = b[sortCol] ?? '';
+      if (sortCol === 'date') { va = parseDate(va); vb = parseDate(vb); }
+      else if (sortCol === 'id') { va = +va; vb = +vb; }
+      else { va = String(va).toLowerCase(); vb = String(vb).toLowerCase(); }
+      if (va < vb) return sortDir === 'asc' ? -1 : 1;
+      if (va > vb) return sortDir === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    document.getElementById('showing-count').textContent = rows.length;
+
+    const tbody = document.getElementById('tbody');
+    if (rows.length === 0) {
+      tbody.innerHTML = '';
+      showEmpty('No applications match your filters.',
+        'Try clearing the search box or filters.');
+      return;
+    }
+    hideEmpty();
+
+    tbody.innerHTML = rows.map(r => `
+      <tr>
+        <td class="id">${r.id}</td>
+        <td class="date">${fmtDate(r.date)}</td>
+        <td class="title">${escHtml(r.title)}</td>
+        <td class="company">${escHtml(r.company)}</td>
+        <td class="location">${escHtml(r.location)}</td>
+        <td><span class="pill pill-platform">${escHtml(r.platform) || '—'}</span></td>
+        <td><span class="pill pill-level">${escHtml(r.level) || '—'}</span></td>
+        <td class="salary">${escHtml(r.salary) || '—'}</td>
+        <td>${statusBadge(r.status)}</td>
+        <td class="notes">${escHtml(r.notes) || '—'}</td>
+        <td>
+          <div class="actions">
+            <button class="icon-btn" title="Edit" onclick='editEntry(${r.id})'><i class="fa-solid fa-pen"></i></button>
+            <button class="icon-btn del" title="Delete" onclick='confirmDelete(${r.id})'><i class="fa-solid fa-trash-can"></i></button>
+          </div>
+        </td>
+      </tr>`).join('');
+  }
+
+  function showEmpty(msg, hint) {
+    const box = document.getElementById('empty');
+    box.style.display = 'block';
+    const p = box.querySelector('#empty-text');
+    p.innerHTML = escHtml(msg);
+    let hintEl = box.querySelector('.hint');
+    if (hint) {
+      if (!hintEl) {
+        hintEl = document.createElement('p');
+        hintEl.className = 'hint';
+        p.after(hintEl);
+      }
+      hintEl.innerHTML = hint;
+    } else if (hintEl) {
+      hintEl.remove();
+    }
+  }
+  function hideEmpty() { document.getElementById('empty').style.display = 'none'; }
+
+  // ── Modal ──────────────────────────────────────────────────
+  function openModal(prefill = {}) {
+    editingId = prefill.id ?? null;
+    document.getElementById('modal-title').textContent = editingId ? 'Edit Application' : 'Add Application';
+    document.getElementById('btn-delete').style.display = editingId ? 'inline-flex' : 'none';
+
+    let dateVal = '';
+    if (prefill.date) {
+      const [d, m, y] = prefill.date.split('/');
+      dateVal = `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+    } else {
+      dateVal = new Date().toISOString().slice(0, 10);
+    }
+
+    document.getElementById('f-date').value     = dateVal;
+    document.getElementById('f-title').value    = prefill.title    || '';
+    document.getElementById('f-company').value  = prefill.company  || '';
+    document.getElementById('f-location').value = prefill.location || '';
+    document.getElementById('f-platform').value = prefill.platform || '';
+    document.getElementById('f-level').value    = prefill.level    || '';
+    document.getElementById('f-salary').value   = prefill.salary   || '';
+    document.getElementById('f-status').value   = prefill.status   || 'Applied';
+    document.getElementById('f-notes').value    = prefill.notes    || '';
+
+    document.getElementById('modal-overlay').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('open');
+    editingId = null;
+  }
+  document.getElementById('modal-overlay').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeModal();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  // ── Save / Edit / Delete ───────────────────────────────────
+  function saveEntry() {
+    const rawDate = document.getElementById('f-date').value; // yyyy-mm-dd
+    const [y, m, d] = rawDate.split('-');
+    const date = (y && m && d) ? `${d}/${m}/${y}` : '';
+
+    const entry = {
+      id:       editingId ?? (Math.max(0, ...data.map(r => r.id)) + 1),
+      date,
+      title:    document.getElementById('f-title').value.trim(),
+      company:  document.getElementById('f-company').value.trim(),
+      location: document.getElementById('f-location').value.trim(),
+      platform: document.getElementById('f-platform').value.trim(),
+      level:    document.getElementById('f-level').value.trim(),
+      salary:   document.getElementById('f-salary').value.trim(),
+      status:   document.getElementById('f-status').value,
+      notes:    document.getElementById('f-notes').value.trim(),
+    };
+
+    if (!entry.title || !entry.company) {
+      alert('Job Title and Company are required.');
+      return;
+    }
+
+    if (editingId !== null) {
+      const idx = data.findIndex(r => r.id === editingId);
+      if (idx !== -1) data[idx] = entry;
+    } else {
+      data.push(entry);
+    }
+
+    saveToStorage();
+    buildFilters();
+    updateStats();
+    render();
+    closeModal();
+  }
+
+  function editEntry(id) {
+    const r = data.find(r => r.id === id);
+    if (r) openModal(r);
+  }
+
+  function confirmDelete(id) {
+    editingId = id;
+    deleteEntry();
+  }
+
+  function deleteEntry() {
+    if (editingId === null) return;
+    if (!confirm('Delete this application?')) return;
+    data = data.filter(r => r.id !== editingId);
+    saveToStorage();
+    buildFilters();
+    updateStats();
+    render();
+    closeModal();
+  }
+
+  // ── Persistence ────────────────────────────────────────────
+  // data.json stays the master record. We mirror edits into
+  // localStorage so they survive a refresh when the file can't be
+  // re-fetched (file://). Use "Export JSON" to write them back to
+  // data.json permanently.
+  function saveToStorage() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+  }
+
+  // ── Export CSV ─────────────────────────────────────────────
+  function exportCSV() {
+    const headers = ['#', 'Date Applied', 'Job Title', 'Company', 'Location', 'Platform', 'Job Level', 'Salary', 'Status', 'Notes'];
+    const rows = data.map(r =>
+      [r.id, r.date, r.title, r.company, r.location, r.platform, r.level, r.salary, r.status, r.notes]
+        .map(v => `"${String(v == null ? '' : v).replace(/"/g, '""')}"`).join(','));
+    const csv = [headers.join(','), ...rows].join('\r\n');
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `job_applications_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  // ── Export JSON (save back to data.json) ───────────────────
+  function exportJSON() {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'data.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  // ── Boot ───────────────────────────────────────────────────
+  setSortIcons();
+  loadData();
+</script>
+</body>
+</html>
