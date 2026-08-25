@@ -2134,5 +2134,65 @@
     "salary": "£28,000-£32,000",
     "status": "Applied",
     "notes": "Easy Apply"
+  },
+  {
+    "id": 179,
+    "date": "25/08/2026",
+    "title": "IT Support Apprentice (L3)",
+    "company": "Big Motoring World",
+    "location": "Gillingham, Kent",
+    "platform": "Indeed",
+    "level": "IT/Apprentice",
+    "salary": "£15,600-£24,784.50/yr",
+    "status": "Applied",
+    "notes": "Apply with Indeed"
+  },
+  {
+    "id": 180,
+    "date": "25/08/2026",
+    "title": "1st Line Support Helpdesk Analyst",
+    "company": "Constant Recruitment Ltd",
+    "location": "Paddock Wood, Kent",
+    "platform": "Reed",
+    "level": "Entry/1st Line",
+    "salary": "£25,000-£30,000",
+    "status": "Applied",
+    "notes": "Easy Apply"
+  },
+  {
+    "id": 181,
+    "date": "25/08/2026",
+    "title": "IT Support Engineer (Help Desk)",
+    "company": "KHR Recruitment Specialists",
+    "location": "West Malling, Kent",
+    "platform": "Reed",
+    "level": "IT/Support",
+    "salary": "£25-£30/hr",
+    "status": "Applied",
+    "notes": "Easy Apply"
+  },
+  {
+    "id": 182,
+    "date": "25/08/2026",
+    "title": "Application Support Analyst",
+    "company": "Commercial Services Group (Cantium)",
+    "location": "West Malling, Kent",
+    "platform": "Indeed",
+    "level": "IT/Support",
+    "salary": "£25,948.96/yr",
+    "status": "Applied",
+    "notes": "Apply with Indeed"
+  },
+  {
+    "id": 183,
+    "date": "25/08/2026",
+    "title": "IT System Support Engineer",
+    "company": "Morgan Jones",
+    "location": "Kent",
+    "platform": "Indeed",
+    "level": "IT/Support",
+    "salary": "Competitive DOE",
+    "status": "Applied",
+    "notes": "Apply with Indeed"
   }
 ]
